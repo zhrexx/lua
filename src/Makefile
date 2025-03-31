@@ -1,0 +1,140 @@
+# == CHANGE THE SETTINGS BELOW TO SUIT YOUR ENVIRONMENT =======================
+PLAT= guess
+
+CC= gcc -std=gnu99
+CFLAGS= -Wall -Wextra -DLUA_COMPAT_5_3 $(SYSCFLAGS) $(MYCFLAGS)
+LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
+LIBS= -static -lm $(SYSLIBS) $(MYLIBS)
+
+AR= ar rcu
+RANLIB= ranlib
+RM= rm -f
+UNAME= uname
+
+SYSCFLAGS=
+SYSLDFLAGS=
+SYSLIBS=
+
+MYCFLAGS= -static -O3
+MYLDFLAGS=
+MYLIBS=
+MYOBJS=
+
+CMCFLAGS=
+
+# == END OF USER SETTINGS -- NO NEED TO CHANGE ANYTHING BELOW THIS LINE =======
+
+PLATS= guess aix bsd c89 freebsd generic ios linux linux-readline macosx mingw posix solaris
+
+LUA_A=	liblua.a
+CORE_O=	lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o lmem.o lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o ltm.o lundump.o lvm.o lzio.o
+LIB_O=	lauxlib.o lbaselib.o lcorolib.o ldblib.o liolib.o lmathlib.o loadlib.o loslib.o lstrlib.o ltablib.o lutf8lib.o linit.o
+BASE_O= $(CORE_O) $(LIB_O) $(MYOBJS)
+
+LUA_T=	lua
+LUA_O=	lua.o
+
+LUAC_T=	luac
+LUAC_O=	luac.o
+
+ALL_O= $(BASE_O) $(LUA_O) $(LUAC_O)
+ALL_T= $(LUA_A) $(LUA_T) $(LUAC_T)
+ALL_A= $(LUA_A)
+
+# Targets start here.
+default: $(PLAT)
+
+all:	$(ALL_T)
+
+o:	$(ALL_O)
+
+a:	$(ALL_A)
+
+$(LUA_A): $(BASE_O)
+	$(AR) $@ $(BASE_O)
+	$(RANLIB) $@
+
+$(LUA_T): $(LUA_O) $(LUA_A)
+	$(CC) -o $@ $(LDFLAGS) $(LUA_O) $(LUA_A) $(LIBS)
+
+$(LUAC_T): $(LUAC_O) $(LUA_A)
+	$(CC) -o $@ $(LDFLAGS) $(LUAC_O) $(LUA_A) $(LIBS)
+
+test:
+	./$(LUA_T) -v
+
+clean:
+	$(RM) $(ALL_T) $(ALL_O)
+
+depend:
+	@$(CC) $(CFLAGS) -MM l*.c
+
+echo:
+	@echo "PLAT= $(PLAT)"
+	@echo "CC= $(CC)"
+	@echo "CFLAGS= $(CFLAGS)"
+	@echo "LDFLAGS= $(LDFLAGS)"
+	@echo "LIBS= $(LIBS)"
+	@echo "AR= $(AR)"
+	@echo "RANLIB= $(RANLIB)"
+	@echo "RM= $(RM)"
+	@echo "UNAME= $(UNAME)"
+
+ALL= all
+
+help:
+	@echo "Do 'make PLATFORM' where PLATFORM is one of these:"
+	@echo "   $(PLATS)"
+	@echo "See doc/readme.html for complete instructions."
+
+guess:
+	@echo Guessing `$(UNAME)`
+	@$(MAKE) `$(UNAME)`
+
+AIX aix:
+	$(MAKE) $(ALL) CC="xlc" CFLAGS="-O2 -DLUA_USE_POSIX -DLUA_USE_DLOPEN" SYSLIBS="-static-libdl" SYSLDFLAGS="-brtl -bexpall"
+
+bsd:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_POSIX -DLUA_USE_DLOPEN" SYSLIBS="-Wl,-E"
+
+c89:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_C89" CC="gcc -std=c89"
+	@echo ''
+	@echo '*** C89 does not guarantee 64-bit integers for Lua.'
+	@echo '*** Make sure to compile all external Lua libraries'
+	@echo '*** with LUA_USE_C89 to ensure consistency'
+	@echo ''
+
+FreeBSD NetBSD OpenBSD freebsd:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_LINUX -DLUA_USE_READLINE -I/usr/include/edit" SYSLIBS="-Wl,-E -ledit" CC="cc"
+
+generic: $(ALL)
+
+ios:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_IOS"
+
+Linux linux:	linux-noreadline
+
+linux-noreadline:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_LINUX" SYSLIBS="-Wl,-E -ldl"
+
+linux-readline:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_LINUX -DLUA_USE_READLINE" SYSLIBS="-Wl,-E -ldl -lreadline"
+
+Darwin macos macosx:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_MACOSX -DLUA_USE_READLINE" SYSLIBS="-lreadline"
+
+mingw:
+	$(MAKE) "LUA_A=lua54.dll" "LUA_T=lua.exe" \
+	"AR=$(CC) -shared -o" "RANLIB=strip --strip-unneeded" \
+	"SYSCFLAGS=-DLUA_BUILD_AS_DLL" "SYSLIBS=" "SYSLDFLAGS=-s" lua.exe
+	$(MAKE) "LUAC_T=luac.exe" luac.exe
+
+posix:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_POSIX"
+
+SunOS solaris:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_POSIX -DLUA_USE_DLOPEN -D_REENTRANT" SYSLIBS="-ldl"
+
+.PHONY: all $(PLATS) help test clean default o a depend echo
+

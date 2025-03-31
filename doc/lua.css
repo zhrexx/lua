@@ -1,0 +1,137 @@
+html {
+	background-color: #121212;
+}
+
+body {
+	background-color: #1E1E1E;
+	color: #E0E0E0;
+	font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+	text-align: justify;
+	line-height: 1.6;
+	margin: 16px auto;
+	padding: 32px;
+	border: solid #2E2E2E 1px;
+	border-radius: 12px;
+	max-width: 70em;
+	width: 90%;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+h1, h2, h3, h4 {
+	color: #6C8EBF;
+	font-family: 'Inter', system-ui, -apple-system, sans-serif;
+	font-weight: 600;
+	text-align: left;
+	margin: 1.5em 0 0.75em;
+}
+
+h1 {
+	font-size: 2.25rem;
+	letter-spacing: -0.5px;
+	border-bottom: 1px solid #3A3A3A;
+	padding-bottom: 0.5em;
+}
+
+h2:before {
+	content: "◆";
+	padding-right: 0.75em;
+	color: #4A6B8A;
+}
+
+a {
+	text-decoration: none;
+	transition: all 0.2s ease;
+}
+
+a:link {
+	color: #6C8EBF;
+}
+
+a:link:hover, a:visited:hover {
+	background-color: rgba(108, 142, 191, 0.2);
+	color: #8DAED9;
+	border-radius: 4px;
+}
+
+a:link:active, a:visited:active {
+	color: #BF616A;
+}
+
+div.menubar {
+	padding-bottom: 1em;
+	border-bottom: 1px solid #3A3A3A;
+	margin-bottom: 2em;
+}
+
+.menubar a:hover {
+	background-color: rgba(108, 142, 191, 0.1);
+	padding: 6px 12px;
+	border-radius: 6px;
+}
+
+:target {
+	background-color: #2A2A2A;
+	margin: -8px;
+	padding: 8px;
+	border-radius: 8px;
+	outline: 2px solid #4A6B8A;
+}
+
+hr {
+	border: 0;
+	height: 1px;
+	background: #3A3A3A;
+	margin: 2em 0;
+}
+
+.footer {
+	color: #7A7A7A;
+	font-size: 0.8rem;
+	text-transform: lowercase;
+	opacity: 0.8;
+}
+
+input[type=text] {
+	background-color: #2A2A2A;
+	border: 2px solid #3A3A3A;
+	border-radius: 24px;
+	color: #E0E0E0;
+	padding: 8px 20px 8px 40px;
+	height: 2.5em;
+	transition: all 0.2s ease;
+}
+
+input[type=text]:focus {
+	outline: none;
+	border-color: #6C8EBF;
+	box-shadow: 0 0 0 3px rgba(108, 142, 191, 0.2);
+}
+
+pre.session {
+	background-color: #2A2A2A;
+	padding: 1.5em;
+	border-radius: 8px;
+	border: 1px solid #3A3A3A;
+	overflow-x: auto;
+}
+
+table {
+	border: none;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+td {
+	padding: 12px;
+	border-bottom: 1px solid #3A3A3A;
+}
+
+table.book img {
+	border: 1px solid #3A3A3A;
+	border-radius: 4px;
+	background-color: #2A2A2A;
+}
+
+img {
+	filter: brightness(0.9) contrast(1.1);
+}
